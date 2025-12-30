@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy New Year 2026</title>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+:root {
+  --neon-pink: #ff0055;
+  --neon-gold: #ffcc00;
+  --bg-dark: #050505;
+}
+
+html, body {
+  margin: 0; padding: 0; height: 100%;
+  font-family: 'Poppins', sans-serif;
+  overflow: hidden;
+  background: var(--bg-dark);
+}
+
+.star {
+  position: fixed; width: 2px; height: 2px;
+  background: white; border-radius: 50%;
+  opacity: 0.3; pointer-events: none;
+}
+
+.screen {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10; padding: 20px; text-align: center;
+}
+.hidden { opacity: 0; pointer-events: none; transform: scale(1.1); }
+
+h2.frame-heading {
+  color: white; margin-bottom: 30px; font-weight: 300;
+  letter-spacing: 1px; max-width: 80%;
+}
+
+/* --- STAGE 1: TIMER --- */
+.timer-box {
+  width: 180px; height: 180px; background: #111;
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; position: relative; border: 2px solid #333;
+}
+svg { transform: rotate(-90deg); }
+#progress-bar { stroke: var(--neon-pink); stroke-width: 8; stroke-dasharray: 502; stroke-dashoffset: 502; transition: 2.5s linear; }
+.timer-box span { position: absolute; color: white; font-weight: bold; }
+
+/* --- STAGE 2: CARDS & GIFT --- */
+.search-container { position: relative; width: 350px; height: 350px; display: flex; justify-content: center; align-items: center; }
+.gift-img { width: 180px; border-radius: 30px; box-shadow: 0 0 30px var(--neon-gold); cursor: pointer; }
+
+.wish-card {
+  position: absolute; width: 280px; height: 160px;
+  background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.6rem; color: white; cursor: pointer; transition: 0.5s;
+}
+.wish-card.exit { transform: translate(-200%, -50%) rotate(-30deg); opacity: 0; }
+
+/* --- STAGE 3: PHOTO STACK --- */
+.stack { position: relative; width: 300px; height: 420px; }
+.img-card {
+  position: absolute; inset: 0; background: #111;
+  border-radius: 20px; padding: 10px; border: 1px solid #333;
+  cursor: pointer; transition: 0.6s ease;
+}
+.img-card img { width: 100%; height: 100%; object-fit: cover; border-radius: 15px; }
+.img-card.swipe { transform: translate(150%, -20%) rotate(25deg); opacity: 0; pointer-events: none; }
+
+/* --- TRANSITION --- */
+#transition-line { display: none; z-index: 100; }
+#transition-line h2 { color: var(--neon-gold); font-size: 2rem; font-style: italic; }
+
+/* --- STAGE 4: FINAL (GLOWING) --- */
+#final { background: black; display: none; }
+
+/* The Glowing Animation */
+@keyframes neonGlow {
+  from { text-shadow: 0 0 10px var(--neon-gold), 0 0 20px var(--neon-gold); }
+  to { text-shadow: 0 0 25px var(--neon-gold), 0 0 50px #ff6600, 0 0 70px #ff0000; }
+}
+
+.letter h1 { 
+  font-size: 3.5rem; 
+  color: var(--neon-gold); 
+  animation: neonGlow 1.5s ease-in-out infinite alternate;
+}
+.letter p { 
+  color: #eee; 
+  font-size: 1.3rem; 
+  max-width: 500px; 
+  margin-top: 20px;
+  text-shadow: 0 0 5px rgba(255,255,255,0.5);
+}
+</style>
+</head>
+<body>
+
+<div id="stage1" class="screen">
+  <h2 class="frame-heading">Amma just tap on the start 🥰 </h2>
+  <div class="timer-box" onclick="runTimer()">
+    <svg width="180" height="180"><circle cx="90" cy="90" r="80" stroke="#222" fill="none"/><circle id="progress-bar" cx="90" cy="90" r="80" fill="none"/></svg>
+    <span id="btnText">START</span>
+  </div>
+</div>
+
+<div id="stage2" class="screen hidden">
+  <h2 class="frame-heading">Amma these slides are my promises for next year🥺</h2>
+  <div class="search-container">
+    <img src="gift.jpeg" class="gift-img" id="mainGift" onclick="openGift()">
+    <div class="wish" style="top: -10%; left: 10%;">✨ we will be together</div>
+    <div class="wish" style="top: 15%; left: 5%;">🌈 happiness in our lives</div>
+    <div class="wish" style="top: 70%; left: 5%;">New Beginnings 🎆</div>
+    <div class="wish" style="top: 45%; left: 15%;">Success </div>
+  </div>
+</div>
+
+<div id="stage3" class="screen hidden">
+  <h2 class="frame-heading">Love & Smiles</h2>
+  <div class="stack">
+    <div id="pic3" class="img-card" style="transform: rotate(-8deg); z-index: 1; display: none;"><img src="pic3.jpeg"></div>
+    <div id="pic2" class="img-card" style="transform: rotate(6deg); z-index: 2;"><img src="pic2.jpeg"></div>
+    <div id="pic1" class="img-card" style="transform: rotate(-3deg); z-index: 3;"><img src="pic1.jpeg"></div>
+  </div>
+</div>
+
+<div id="transition-line" class="screen">
+  <h2>"And finally, the most special one .. ONE DAY WE WILL"</h2>
+</div>
+
+<div id="final" class="screen">
+  <div class="letter">
+    <h1>HAPPY 2026! 🎇</h1>
+    <p>Amma you the world best mom. Naku chinapatti nunchi nenu adagakunda ney naku anni the best echanu epudu next year na time<br>
+    Amma nuvu emi feel avadhu we will be next year andharam okadegar untai the best ananu kani edhi mana first step we will </p>
+    <br>
+    <h1>I Love You Mummy Gadu 🥺</h1>
+    <p style="font-weight: bold; font-size: 1.6rem; color: var(--neon-pink); margin-top: 30px; text-shadow: 0 0 10px var(--neon-pink);">Forever ❤️</p>
+  </div>
+</div>
+
+<script>
+for (let i = 0; i < 50; i++) {
+  let star = document.createElement('div');
+  star.className = 'star';
+  star.style.top = Math.random() * 100 + 'vh';
+  star.style.left = Math.random() * 100 + 'vw';
+  document.body.appendChild(star);
+}
+
+// ONE TIME BIG SPLASH FUNCTION
+function bigSplash() {
+  confetti({
+    particleCount: 300, // Massive amount
+    spread: 120,
+    startVelocity: 60,
+    origin: { y: 0.5 },
+    colors: ['#ff0055', '#ffcc00', '#00ffcc', '#ffffff', '#ff0000'],
+    gravity: 0.7,
+    ticks: 400
+  });
+}
+
+function runTimer() {
+  document.getElementById('progress-bar').style.strokeDashoffset = 0;
+  setTimeout(() => {
+    document.getElementById('stage1').classList.add('hidden');
+    document.getElementById('stage2').classList.remove('hidden');
+  }, 2600);
+}
+
+let wishesRemoved = 0;
+const wishesArr = document.querySelectorAll('.wish');
+wishesArr.forEach((w, i) => {
+  w.className = 'wish-card';
+  w.style.zIndex = 50 - i;
+  w.onclick = (e) => { e.stopPropagation(); w.classList.add('exit'); wishesRemoved++; };
+});
+
+function openGift() {
+  if (wishesRemoved < wishesArr.length) return alert("Move the cards first! ✨");
+  bigSplash(); // Splash when gift opens
+  setTimeout(() => {
+    document.getElementById('stage2').classList.add('hidden');
+    document.getElementById('stage3').classList.remove('hidden');
+  }, 600);
+}
+
+let photosSwiped = 0;
+const cards = [document.getElementById('pic1'), document.getElementById('pic2'), document.getElementById('pic3')];
+
+cards.forEach((card) => {
+  card.onclick = () => {
+    card.classList.add('swipe');
+    photosSwiped++;
+
+    if (photosSwiped === 2) {
+      setTimeout(() => {
+        document.getElementById('stage3').classList.add('hidden');
+        document.getElementById('transition-line').style.display = 'flex';
+        setTimeout(() => {
+          document.getElementById('transition-line').style.display = 'none';
+          document.getElementById('pic3').style.display = 'block';
+          document.getElementById('stage3').classList.remove('hidden');
+        }, 2500);
+      }, 600);
+    }
+
+    if (photosSwiped === 3) {
+      setTimeout(() => {
+        document.getElementById('stage3').classList.add('hidden');
+        bigSplash(); // THE FINAL ONE-TIME SPLASH
+        document.getElementById('final').style.display = 'flex';
+      }, 700);
+    }
+  };
+});
+</script>
+</body>
+</html>
